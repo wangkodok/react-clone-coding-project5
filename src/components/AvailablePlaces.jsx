@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 import Places from "./Places.jsx";
 import Error from "./Error.jsx";
 import { sortPlacesByDistance } from "../loc.js";
@@ -17,7 +18,6 @@ export default function AvailablePlaces({ onSelectPlace }) {
         const places = await fetchAvailablePlaces();
 
         navigator.geolocation.getCurrentPosition((position) => {
-          console.log(position);
           const sortedPlaces = sortPlacesByDistance(
             places,
             position.coords.latitude,
@@ -29,7 +29,7 @@ export default function AvailablePlaces({ onSelectPlace }) {
       } catch (error) {
         setError({
           message:
-            error.message || "장소를 불러오지 못했습니다. 다시 시도해주세요.",
+            error.message || "Could not fetch places, please try again later.",
         });
         setIsFetching(false);
       }
@@ -39,7 +39,7 @@ export default function AvailablePlaces({ onSelectPlace }) {
   }, []);
 
   if (error) {
-    return <Error title="오류가 발생했습니다." message={error.message} />;
+    return <Error title="An error occurred!" message={error.message} />;
   }
 
   return (
@@ -47,7 +47,7 @@ export default function AvailablePlaces({ onSelectPlace }) {
       title="Available Places"
       places={availablePlaces}
       isLoading={isFetching}
-      loadingText="데이터를 불러오는 중입니다."
+      loadingText="Fetching place data..."
       fallbackText="No places available."
       onSelectPlace={onSelectPlace}
     />

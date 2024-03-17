@@ -13,7 +13,7 @@ function App() {
 
   const [userPlaces, setUserPlaces] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState();
 
   const [errorUpdatingPlaces, setErrorUpdatingPlaces] = useState();
 
@@ -26,15 +26,18 @@ function App() {
         const places = await fetchUserPlaces();
         setUserPlaces(places);
       } catch (error) {
-        setError({ message: error.message || "장소를 불러오는데 실패" });
+        setError({ message: error.message || "Failed to fetch user places." });
       }
+
       setIsFetching(false);
     }
+
     fetchPlaces();
   }, []);
 
-  function handleStartRemovePlace() {
+  function handleStartRemovePlace(place) {
     setModalIsOpen(true);
+    selectedPlace.current = place;
   }
 
   function handleStopRemovePlace() {
@@ -42,7 +45,7 @@ function App() {
   }
 
   async function handleSelectPlace(selectedPlace) {
-    // await updateUserPlaces([selectedPlace, ...userPlaces])
+    // await updateUserPlaces([selectedPlace, ...userPlaces]);
 
     setUserPlaces((prevPickedPlaces) => {
       if (!prevPickedPlaces) {
@@ -59,7 +62,7 @@ function App() {
     } catch (error) {
       setUserPlaces(userPlaces);
       setErrorUpdatingPlaces({
-        message: error.message || "장소 업데이트 실패",
+        message: error.message || "Failed to update places.",
       });
     }
   }
@@ -79,7 +82,7 @@ function App() {
       } catch (error) {
         setUserPlaces(userPlaces);
         setErrorUpdatingPlaces({
-          message: error.message || "Failed to delete place",
+          message: error.message || "Failed to delete place.",
         });
       }
 
@@ -97,12 +100,13 @@ function App() {
       <Modal open={errorUpdatingPlaces} onClose={handleError}>
         {errorUpdatingPlaces && (
           <Error
-            title="오류가 발생"
+            title="An error occurred!"
             message={errorUpdatingPlaces.message}
             onConfirm={handleError}
           />
         )}
       </Modal>
+
       <Modal open={modalIsOpen} onClose={handleStopRemovePlace}>
         <DeleteConfirmation
           onCancel={handleStopRemovePlace}
@@ -125,7 +129,7 @@ function App() {
             title="I'd like to visit ..."
             fallbackText="Select the places you would like to visit below."
             isLoading={isFetching}
-            loadingText="장소 불러오는 중입니다."
+            loadingText="Fetching your places..."
             places={userPlaces}
             onSelectPlace={handleStartRemovePlace}
           />
