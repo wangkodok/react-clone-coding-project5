@@ -5,13 +5,13 @@ import { sortPlacesByDistance } from "../loc.js";
 import { fetchAvailablePlaces } from "../http.js";
 
 export default function AvailablePlaces({ onSelectPlace }) {
-  const [loading, setLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const [availablePlaces, setAvailablePlaces] = useState([]);
   const [error, setError] = useState();
 
   useEffect(() => {
     async function fetchPlaces() {
-      setLoading(true);
+      setIsFetching(true);
 
       try {
         const places = await fetchAvailablePlaces();
@@ -24,14 +24,14 @@ export default function AvailablePlaces({ onSelectPlace }) {
             position.coords.longitude
           );
           setAvailablePlaces(sortedPlaces);
-          setLoading(false);
+          setIsFetching(false);
         });
       } catch (error) {
         setError({
           message:
             error.message || "장소를 불러오지 못했습니다. 다시 시도해주세요.",
         });
-        setLoading(false);
+        setIsFetching(false);
       }
     }
 
@@ -46,7 +46,7 @@ export default function AvailablePlaces({ onSelectPlace }) {
     <Places
       title="Available Places"
       places={availablePlaces}
-      isLoading={loading}
+      isLoading={isFetching}
       loadingText="데이터를 불러오는 중입니다."
       fallbackText="No places available."
       onSelectPlace={onSelectPlace}
